@@ -24,10 +24,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.android.example.appsearchsample.NoteAppSearchManager
-import com.android.example.appsearchsample.notemanagerapi.NoteManagerApi
-import com.android.example.appsearchsample.notemanagerapi.NoteManagerImpl
-import com.android.example.appsearchsample.searchapi.SearchManagerApi
-import com.android.example.appsearchsample.searchapi.SearchManagerImpl
+import com.example.notemanager.NoteManagerApi
+import com.example.notemanager.createNoteManager
+import com.example.searchmanager.SearchManagerApi
+import com.example.searchmanager.createSearchManager
 import kotlinx.coroutines.launch
 
 /**
@@ -53,8 +53,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
       if(_isAppSearchInitedLiveData.value == true) return@launch
       noteAppSearchManager.initAppSearchFlow().collect {
         if (it != null) {
-          noteManagerApi = NoteManagerImpl(it)
-          searchManagerApi = SearchManagerImpl(it)
+          noteManagerApi = createNoteManager(it)
+          searchManagerApi = createSearchManager(it)
           _isAppSearchInitedLiveData.postValue(true)
         }
       }

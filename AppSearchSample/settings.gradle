@@ -30,3 +30,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "AppSearchSample"
 include ':app'
+include ':app:searchmanager'
+include ':app:notemanager'
