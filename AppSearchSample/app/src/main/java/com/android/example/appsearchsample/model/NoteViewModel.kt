@@ -24,7 +24,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.android.example.appsearchsample.NoteAppSearchManager
-import java.util.UUID
+import com.android.example.appsearchsample.notemanagerapi.NoteManagerApi
+import com.android.example.appsearchsample.notemanagerapi.NoteManagerImpl
+import com.android.example.appsearchsample.searchapi.SearchManagerApi
+import com.android.example.appsearchsample.searchapi.SearchManagerImpl
 import kotlinx.coroutines.launch
 
 /**
@@ -37,10 +40,28 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
   val errorMessageLiveData: LiveData<String?> = _errorMessageLiveData
 
   private val _noteLiveData: MutableLiveData<List<SearchResult>> = MutableLiveData(mutableListOf())
-  private val noteLiveData: LiveData<List<SearchResult>> = _noteLiveData
+  private val _isAppSearchInitedLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
   private val noteAppSearchManager: NoteAppSearchManager =
-    NoteAppSearchManager(getApplication(), viewModelScope)
+    NoteAppSearchManager(getApplication())
+
+  private lateinit var noteManagerApi: NoteManagerApi
+  private lateinit var searchManagerApi: SearchManagerApi
+
+  fun initSearchManager(): LiveData<Boolean> {
+    viewModelScope.launch {
+      if(_isAppSearchInitedLiveData.value == true) return@launch
+      noteAppSearchManager.initAppSearchFlow().collect {
+        if (it != null) {
+          noteManagerApi = NoteManagerImpl(it)
+          searchManagerApi = SearchManagerImpl(it)
+          _isAppSearchInitedLiveData.postValue(true)
+        }
+      }
+    }
+    return _isAppSearchInitedLiveData
+  }
+
 
   /**
    * Adds a new [Note] document to the AppSearch database.
@@ -54,15 +75,11 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
    * @param text text to create [Note] document for.
    */
   fun addNote(text: String, title: String) {
-    val id = UUID.randomUUID().toString()
-    val note = Note(id = id, text = text, title = title)
     viewModelScope.launch {
-      val result = noteAppSearchManager.addNote(note)
-      if (!result.isSuccess) {
-        _errorMessageLiveData.postValue("Failed to add note with id: $id, text: $text, and title: $title")
+      if (!noteManagerApi.addNote(text, title).isSuccess) {
+        _errorMessageLiveData.postValue("Failed to add note with text: $text, and title: $title")
       }
-
-      queryNotes()
+      queryLatestNotes()
     }
   }
 
@@ -76,14 +93,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
    */
   fun removeNote(namespace: String, id: String) {
     viewModelScope.launch {
-      val result = noteAppSearchManager.removeNote(namespace, id)
-      if (!result.isSuccess) {
+      if (!noteManagerApi.removeNote(namespace, id).isSuccess) {
         _errorMessageLiveData.postValue(
           "Failed to remove note in namespace: $namespace with id: $id"
         )
       }
-
-      queryNotes()
+      queryLatestNotes()
     }
   }
 
@@ -94,12 +109,22 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
    * If no query is provided, this retrieves all [SearchResult] objects in the
    * database.
    */
-  fun queryNotes(query: String = ""): LiveData<List<SearchResult>> {
+  fun queryNotes(query: String): LiveData<List<SearchResult>> {
     viewModelScope.launch {
-      val resultNotes = noteAppSearchManager.queryLatestNotes(query)
-      _noteLiveData.postValue(resultNotes)
+      _noteLiveData.postValue(searchManagerApi.queryNotes(query))
     }
-    return noteLiveData
+    return _noteLiveData
+  }
+
+  /**
+   * Retrieves latest 10 results from the AppSearch
+   * database.
+   */
+  fun queryLatestNotes(): LiveData<List<SearchResult>> {
+    viewModelScope.launch {
+      _noteLiveData.postValue(noteManagerApi.queryLatestNotes(10))
+    }
+    return _noteLiveData
   }
 
   /**

@@ -67,30 +67,42 @@ class MainActivity : AppCompatActivity() {
     notesList = findViewById(R.id.notes_list)
     noNotesMessage = findViewById(R.id.no_notes_message)
     insertNoteButton = findViewById(R.id.insert_note_button)
-
+    initSearchEngine()
     initAddNoteButtonListener()
     initNoteListView()
-
-    noteViewModel.queryNotes().observe(
-      this,
-      {
-        notesAdapter.submitList(it)
-        progressSpinner.visibility = View.GONE
-        if (it.isEmpty()) {
-          notesList.visibility = View.GONE
-          noNotesMessage.visibility = View.VISIBLE
-        } else {
-          notesList.visibility = View.VISIBLE
-          noNotesMessage.visibility = View.GONE
-        }
-      }
-    )
 
     noteViewModel.errorMessageLiveData.observe(this, {
       it?.let {
         Toast.makeText(applicationContext, it, LENGTH_LONG).show()
       }
     })
+  }
+
+  private fun initSearchEngine() {
+    noteViewModel.initSearchManager().observe(this) { initDone ->
+      progressSpinner.visibility = if (initDone) {
+        observeOnNotes()
+        View.GONE
+      } else {
+        View.VISIBLE
+      }
+    }
+  }
+
+  private fun observeOnNotes() {
+    noteViewModel.queryLatestNotes().observe(
+      this
+    ) {
+      notesAdapter.submitList(it)
+      progressSpinner.visibility = View.GONE
+      if (it.isEmpty()) {
+        notesList.visibility = View.GONE
+        noNotesMessage.visibility = View.VISIBLE
+      } else {
+        notesList.visibility = View.VISIBLE
+        noNotesMessage.visibility = View.GONE
+      }
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -114,7 +126,7 @@ class MainActivity : AppCompatActivity() {
       override fun onQueryTextChange(newText: String): Boolean {
         // This resets the notes list to display all notes if the query is
         // cleared.
-        if (newText.isEmpty()) noteViewModel.queryNotes()
+        if (newText.isEmpty()) noteViewModel.queryLatestNotes()
         return false
       }
     })
