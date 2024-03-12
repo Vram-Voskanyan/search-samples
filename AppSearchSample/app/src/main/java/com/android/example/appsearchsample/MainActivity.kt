@@ -31,8 +31,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.example.appsearchsample.model.Note
 import com.android.example.appsearchsample.model.NoteViewModel
+import com.example.notemanager.model.Note
 
 /**
  * Activity to set up a simple AppSearch demo.

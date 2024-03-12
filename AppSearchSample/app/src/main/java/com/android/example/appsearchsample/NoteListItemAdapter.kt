@@ -28,7 +28,7 @@ import androidx.appsearch.app.SearchResult
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.android.example.appsearchsample.model.Note
+import com.example.notemanager.model.Note
 
 /**
  * Adapter for displaying a list of [Note] objects.

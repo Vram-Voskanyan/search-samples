@@ -30,5 +30,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "AppSearchSample"
 include ':app'
-include ':app:searchmanager'
-include ':app:notemanager'
+include ':searchmanager'
+include ':notemanager'
+include ':androidappsearch'

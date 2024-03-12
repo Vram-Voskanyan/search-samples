@@ -1,0 +1,29 @@
+[versions]
+appcompat = "1.6.1"
+appsearchCompiler = "1.1.0-alpha03"
+concurrentFuturesKtx = "1.1.0"
+constraintlayout = "2.1.4"
+espressoCore = "3.5.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+lifecycleLivedataKtx = "2.7.0"
+material = "1.11.0"
+navigationFragmentKtx = "2.7.7"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-appsearch = { module = "androidx.appsearch:appsearch", version.ref = "appsearchCompiler" }
+androidx-appsearch-compiler = { module = "androidx.appsearch:appsearch-compiler", version.ref = "appsearchCompiler" }
+androidx-appsearch-local-storage = { module = "androidx.appsearch:appsearch-local-storage", version.ref = "appsearchCompiler" }
+androidx-appsearch-platform-storage = { module = "androidx.appsearch:appsearch-platform-storage", version.ref = "appsearchCompiler" }
+androidx-concurrent-futures-ktx = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "concurrentFuturesKtx" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
+junit = { module = "junit:junit", version.ref = "junit" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+
+[plugins]
