@@ -18,5 +18,14 @@ internal class SearchManagerImpl(private val appSearchSession: AppSearchSession)
         return searchResults.nextPageAsync.await()
     }
 
+    override suspend fun queryLatestNotes(snippetCount: Int): List<SearchResult> {
+        val searchSpec = SearchSpec.Builder()
+            .setRankingStrategy(SearchSpec.RANKING_STRATEGY_CREATION_TIMESTAMP)
+            .setSnippetCount(snippetCount)
+            .build()
+
+        val searchResults = appSearchSession.search("", searchSpec)
+        return searchResults.nextPageAsync.await()
+    }
 }
 

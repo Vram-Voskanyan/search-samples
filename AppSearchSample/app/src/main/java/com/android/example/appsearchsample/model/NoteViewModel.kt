@@ -23,12 +23,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.androidappsearch.NoteAppSearchManager
+import com.example.androidappsearch.NoteAppSearchManagerApi
+import com.example.androidappsearch.provideLazyNoteAppSearchManager
 import com.example.notemanager.NoteManagerApi
-import com.example.notemanager.createNoteManager
+import com.example.notemanager.provideNoteManager
 import com.example.notemanager.model.Note
 import com.example.searchmanager.SearchManagerApi
-import com.example.searchmanager.createSearchManager
+import com.example.searchmanager.provideSearchManager
 import kotlinx.coroutines.launch
 
 /**
@@ -43,8 +44,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
   private val _noteLiveData: MutableLiveData<List<SearchResult>> = MutableLiveData(mutableListOf())
   private val _isAppSearchInitedLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
-  private val noteAppSearchManager: NoteAppSearchManager =
-    NoteAppSearchManager(getApplication())
+  private val noteAppSearchManager: NoteAppSearchManagerApi = provideLazyNoteAppSearchManager(getApplication())
 
   private lateinit var noteManagerApi: NoteManagerApi
   private lateinit var searchManagerApi: SearchManagerApi
@@ -54,8 +54,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
       if(_isAppSearchInitedLiveData.value == true) return@launch
       noteAppSearchManager.initAppSearchFlow(Note::class.java).collect {
         if (it != null) {
-          noteManagerApi = createNoteManager(it)
-          searchManagerApi = createSearchManager(it)
+          noteManagerApi = provideNoteManager(it)
+          searchManagerApi = provideSearchManager(it)
           _isAppSearchInitedLiveData.postValue(true)
         }
       }
@@ -123,13 +123,13 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
    */
   fun queryLatestNotes(): LiveData<List<SearchResult>> {
     viewModelScope.launch {
-      _noteLiveData.postValue(noteManagerApi.queryLatestNotes(10))
+      _noteLiveData.postValue(searchManagerApi.queryLatestNotes(10))
     }
     return _noteLiveData
   }
 
   /**
-   * Factory for creating a [NoteAppSearchManager] instance.
+   * Factory for creating a [NoteAppSearchManagerImpl] instance.
    */
   class NoteViewModelFactory(private val application: Application) :
     ViewModelProvider.Factory {

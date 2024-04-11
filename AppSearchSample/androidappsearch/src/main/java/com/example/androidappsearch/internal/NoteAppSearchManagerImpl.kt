@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.androidappsearch
+package com.example.androidappsearch.internal
 
 import android.content.Context
 import androidx.appsearch.app.SetSchemaRequest
@@ -21,15 +21,16 @@ import androidx.appsearch.localstorage.LocalStorage
 import androidx.appsearch.platformstorage.PlatformStorage
 import androidx.concurrent.futures.await
 import androidx.core.os.BuildCompat
+import com.example.androidappsearch.NoteAppSearchManagerApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.flow
 
 /**
- * [NoteAppSearchManager] is responsible only for the creation of the "appSearchSession"
+ * [NoteAppSearchManagerImpl] is responsible only for the creation of the "appSearchSession"
  */
-class NoteAppSearchManager(private val context: Context) {
+internal class NoteAppSearchManagerImpl(private val context: Context): NoteAppSearchManagerApi {
 
-  fun initAppSearchFlow(documentClasses: Class<*>) = flow {
+  override fun initAppSearchFlow(documentClasses: Class<*>) = flow {
       emit(null)
       // Creates a [AppSearchSession], for S+ devices uses PlatformStorage, for R- devices uses
       // LocalStorage session.
